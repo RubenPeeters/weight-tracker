@@ -1,0 +1,7 @@
+- Tried to separate the digits and identify them manually but didnt work
+- pytesseract cant find the digits
+- google cloud vision API"?
+  - https://codelabs.developers.google.com/codelabs/cloud-vision-api-python
+- easyocr?
+  - need to install torch and torchvision https://pytorch.org/
+  - 

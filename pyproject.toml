@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "opencv-weight-tracker"
+version = "0.1.0"
+description = ""
+authors = ["Ruben Peeters <ruben@fampeeters.be>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+opencv-python = "^4.8.1.78"
+imutils = "^0.5.4"
+scipy = "^1.11.4"
+python-dotenv = "^1.0.0"
+easyocr = "^1.7.1"
+google-cloud-vision = "^3.5.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
