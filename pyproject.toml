@@ -13,6 +13,8 @@ scipy = "^1.11.4"
 python-dotenv = "^1.0.0"
 easyocr = "^1.7.1"
 google-cloud-vision = "^3.5.0"
+pydantic = "^2.5.2"
+pandas = "^2.1.4"
 
 [build-system]
 requires = ["poetry-core"]
