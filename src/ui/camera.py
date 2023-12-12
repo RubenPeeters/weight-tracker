@@ -53,4 +53,6 @@ class CameraClick(BoxLayout):
     def analyze(self):
         cwd = Path.cwd()
         img = read_image(cwd / self.image_path)
-        analyze_and_write_to_csv(analyze_mock, img, cwd / "output" / "output.csv")
+        analyze_and_write_to_csv(
+            analyze_cloud_vision, img, cwd / "output" / "output.csv"
+        )
