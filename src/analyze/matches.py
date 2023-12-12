@@ -1,17 +1,22 @@
-from typing import ByteString, Sequence
-import cv2 as cv
-from pathlib import Path
-import re
-import pandas as pd
+# import the necessary packages
 import os
 import random
-
-# import the necessary packages
+import re
+from typing import ByteString, Sequence
 from google.cloud import vision
+
+import cv2 as cv
+import pandas as pd
 
 from models.measurement import Measurement
 
 pattern = "\d+\.\d+|\d+\,\d+|\.\d+|\,\d+"
+
+
+def append_model_to_csv(m, path):
+    d = m.model_dump()
+    df = pd.DataFrame(data=d, index=[0])
+    df.to_csv(path, mode="a", header=not os.path.exists(path))
 
 
 def get_matches(response: vision.AnnotateImageResponse):
@@ -37,43 +42,33 @@ def analyze_image_from_opencv_img(
     return response
 
 
-def print_labels(response: vision.AnnotateImageResponse):
-    print("=" * 80)
-    for label in response.label_annotations:
-        print(
-            f"{label.score:4.0%}",
-            f"{label.description:5}",
-            sep=" | ",
-        )
-
-
 def opencv_to_bytes(img):
     return cv.imencode(".jpg", img)[1].tobytes()
 
 
-def append_model_to_csv(m, path):
-    d = m.model_dump()
-    df = pd.DataFrame(data=d, index=[0])
-    df.to_csv(path, mode="a", header=not os.path.exists(path))
+def analyze_cloud_vision(img):
+    client = vision.ImageAnnotatorClient.from_service_account_file(
+        "keys/credentials.json"
+    )
+    features = [vision.Feature.Type.TEXT_DETECTION]
 
-
-if __name__ == "__main__":
-    cwd = Path.cwd()
-    example1 = cwd / "images" / "example1.jpg"
-    example2 = cwd / "images" / "example2.jpg"
-    img = cv.imread(str(example1))
-
-    # client = vision.ImageAnnotatorClient.from_service_account_file(
-    #     "keys/credentials.json"
-    # )
-    # features = [vision.Feature.Type.TEXT_DETECTION]
-
-    # response = analyze_image_from_opencv_img(opencv_to_bytes(img), features, client)
-    # matches = get_matches(response)
-    matches = {float("{:.1f}".format(random.uniform(50, 150)))}
+    response = analyze_image_from_opencv_img(opencv_to_bytes(img), features, client)
+    matches = get_matches(response)
+    # matches = {float("{:.1f}".format(random.uniform(50, 150)))}
     print(f"{matches=}")
+    if len(matches) != 1:
+        raise ValueError(f"Found more than one value. {matches}")
+    return matches
+
+
+def analyze_mock(img):
+    return {float("{:.1f}".format(random.uniform(50, 150)))}
+
+
+def analyze_and_write_to_csv(f, img, path):
+    matches = f(img)
     if len(matches) != 1:
         raise ValueError(f"Found more than one value. {matches}")
     match = float(matches.pop())
     m = Measurement(value=match, clothes=bool(random.getrandbits(1)))
-    append_model_to_csv(m, path=cwd / "output" / "output.csv")
+    append_model_to_csv(m, path=path)

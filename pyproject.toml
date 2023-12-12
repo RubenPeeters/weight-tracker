@@ -15,6 +15,7 @@ easyocr = "^1.7.1"
 google-cloud-vision = "^3.5.0"
 pydantic = "^2.5.2"
 pandas = "^2.1.4"
+kivy = "^2.2.1"
 
 [build-system]
 requires = ["poetry-core"]
